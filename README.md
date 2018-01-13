@@ -1,10 +1,10 @@
-#Catalog App
-
+# Catalog App
+----------------
 The Catalog App consists of developing an application that provides a list of items within a variety of categories, as well as provide a user registration and authentication system.
 
-#Steps to Run:
-
-1. Clone the project from respository https://github.com/mosesmaxwell/CatalogApp.git
+# Steps to Run:
+----------------
+1. Clone the project from https://github.com/mosesmaxwell/CatalogApp.git
 
 2. Launch the Vagrant VM from inside the *vagrant* folder with:
 
