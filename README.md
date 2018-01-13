@@ -6,26 +6,14 @@ The Catalog App consists of developing an application that provides a list of it
 ----------------
 1. Clone the project from https://github.com/mosesmaxwell/CatalogApp.git
 
-2. Launch the Vagrant VM from inside the *vagrant* folder with:
+2. Launch the vagrant using the command "vagrant up"
 
-``` vagrant up```
+3. Login to vagrant using "vagrant ssh"
 
-3. Then access the shell with:
+4. Move the files inside catalog folder "cd /vagrant/catalog"
 
-``` vagrant ssh```
+5. Then run the default database configuration using "python loaddata.py"
 
-4. Then move inside the catalog folder:
+6. Run "python catalogapp.py"
 
-`cd /vagrant/catalog`
-
-5. Then run the database configuration using below command (to load with default values):
-
-`python loaddata.py`
-
-6. Then run the application:
-
-`python catalogapp.py`
-
-7. After the last command you are able to browse the application at this URL:
-
-`http://localhost:5000/`
+7. Launch the application by "http://localhost:5000"
