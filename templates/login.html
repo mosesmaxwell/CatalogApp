@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Catalog App | Moses Maxwell</title>
+
+    <link rel="stylesheet" href="/static/bootstrap.min.css">
+    <link rel="stylesheet" href="/static/style.css">
+    <!--LOAD PRE-REQUISITES FOR GOOGLE SIGN IN -->
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
+    <script src="//apis.google.com/js/platform.js?onload=start"> </script>
+    <!-- END PRE-REQUISITES FOR GOOGLE SIGN IN -->
+</head>
+
+<body>
+    <div class="container">
+        <header>
+            <div class="row border border-primary border-top-0 border-left-0 border-right-0 mb-3">
+                <div class="col">
+                    <h1 class="text-uppercase">
+                        <a href="/" class="brand-color-title">Catalog App</a>
+                    </h1>
+                </div>
+                <div class="col text-right mt-2">
+                    {%if 'username' not in session %}
+                    <a href="{{url_for('login')}}" class="btn btn-primary">Login</a>
+                    {% else %}
+                    <a href="{{url_for('logout')}}" class="btn btn-danger">Logout</a>
+                    {% endif %}
+                </div>
+            </div>
+        </header>
+        <main>
+            <div class="container">
+                <div class="row mt-5">
+                    <div class="col text-right">
+                        <!-- facebook login -->
+                        <fb:login-button size="large" scope="public_profile,email" onlogin="checkLoginState();">
+                            <a href='javascript:checkLoginState()'>Login with Facebook</a>
+                        </fb:login-button>
+                    </div>
+                    <div class="col" id="signInButton">
+                        <!-- google login -->
+                        <span class="g-signin" data-scope="openid email" data-clientid="171177101443-k8rrjvblh9h1pcb91vnml46i76puv0bs.apps.googleusercontent.com"
+                            data-redirecturi="postmessage" data-accesstype="offline" data-cookiepolicy="single_host_origin" data-callback="signInCallback"
+                            data-approvalprompt="force">
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        function signInCallback(authResult) {
+            if (authResult['code']) {
+                // Hide the sign-in button now that the user is authorized
+                $('#signinButton').attr('style', 'display: none');
+
+                // Send the one-time-use code to the server, if the server responds, write a 'login successful' message to the web page and then redirect back to the main restaurants page
+                $.ajax({
+                    type: 'POST',
+                    url: '/gconnect?state={{STATE}}',
+                    processData: false,
+                    data: authResult['code'],
+                    contentType: 'application/octet-stream; charset=utf-8',
+                    success: function (result) {
+                        // Handle or verify the server response if necessary.
+                        if (result) {
+                            $('#login').html('Logging in...')
+                            window.location.href = "/catalog";
+                        } else if (authResult['error']) {
+                            console.log('There was an error: ' + authResult['error']);
+                        } else {
+                            $('#login').html('Failed to make a server-side call. Check your configuration and console.');
+                        }
+                    }
+                });
+            }
+        }
+    </script>
+
+    <script>
+        window.fbAsyncInit = function () {
+            FB.init({
+                appId: '1945875082397226',
+                cookie: true,
+                xfbml: true,
+                version: 'v2.11'
+            });
+            FB.AppEvents.logPageView();
+        };
+
+        (function (d, s, id) {
+            var js, fjs = d.getElementsByTagName(s)[0];
+            if (d.getElementById(id)) {
+                return;
+            }
+            js = d.createElement(s);
+            js.id = id;
+            js.src = "https://connect.facebook.net/en_US/sdk.js";
+            fjs.parentNode.insertBefore(js, fjs);
+        }(document, 'script', 'facebook-jssdk'));
+
+        // Here we run a very simple test of the Graph API after login is
+        // successful.  See statusChangeCallback() for when this call is made.
+        function checkLoginState() {
+            var access_token = FB.getAuthResponse()['accessToken'];
+            console.log(access_token)
+            console.log('Welcome!  Fetching your detail.... ');
+            FB.api('/me', function (response) {
+                console.log('Login success for: ' + response.name);
+                $.ajax({
+                    type: 'POST',
+                    url: '/fbconnect?state={{STATE}}',
+                    processData: false,
+                    data: access_token,
+                    contentType: 'application/octet-stream; charset=utf-8',
+                    success: function (result) {
+                        // Handle or verify the server response if necessary.
+                        if (result) {
+                            $('#login').html('Authendication Successful!</br>' + result + '</br>Redirecting to app...')
+                            setTimeout(function () {
+                                window.location.href = "/catalog";
+                            }, 4000);
+                        } else {
+                            $('#login').html('Failed to make a server-side call. Check your configuration and console.');
+                        }
+                    }
+                });
+            });
+        }
+    </script>
+</body>
+
+</html>
